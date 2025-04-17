@@ -1,0 +1,41 @@
+{
+  "name": "hephaestus",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "prisma": {
+    "seed": "node prisma/seeds.js"
+  },
+  "scripts": {
+    "dev": "node --watch app.js",
+    "generate-keys": "node auth-config/key-pair-generator.js",
+    "generate-prisma-client": "prisma generate",
+    "generate-prisma-client-sql": "prisma generate --sql",
+    "migrate-schema": "prisma migrate dev",
+    "prisma-setup": "prisma init --datasource-provider postgresql",
+    "prisma-studio": "prisma studio",
+    "start": "node app.js",
+    "sync-db->prisma": "prisma db pull",
+    "sync-prisma->db": "prisma db push"
+  },
+  "keywords": [],
+  "author": "Swagatam Pati <swagatamheroz@gmail.com>",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@prisma/client": "^6.5.0",
+    "bcryptjs": "^3.0.2",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-async-handler": "^1.2.0",
+    "express-validator": "^7.2.1",
+    "jsonwebtoken": "^9.0.2",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1"
+  },
+  "devDependencies": {
+    "prisma": "^6.5.0"
+  }
+}
