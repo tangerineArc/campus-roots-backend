@@ -7,10 +7,133 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  Alumni
+  Student
+}
+
 model User {
+  id             String         @id @default(cuid())
+  email          String         @unique
+  name           String?
+  microsoftId    String         @unique
+  createdAt      DateTime       @default(now())
+  role           Role?
+  About          String?
+  Avatar         String?
+  Experiences    Experience[]
+  Education      Education[]
+  Skills         Skill[]
+  Achievements   Achievement[]
+  posts          Post[]
+  LikedPosts     Like[]
+  Comments       Comment[]
+  LikedComments  CommentLike[]
+  conversations1 Conversation[] @relation("User1")
+  conversations2 Conversation[] @relation("User2")
+  Connection1    Connections[]  @relation("User1")
+  Connection2    Connections[]  @relation("User2")
+}
+
+model Experience {
+  id        String    @id @default(cuid())
+  User      User      @relation(fields: [userId], references: [id])
+  userId    String
+  company   String
+  Role      String
+  StartDate DateTime
+  EndDate   DateTime?
+  isPresent Boolean
+}
+
+model Education {
+  id          String    @id @default(cuid())
+  User        User      @relation(fields: [userId], references: [id])
+  userId      String
+  Institution String
+  Degree      String
+  StartDate   DateTime
+  EndDate     DateTime?
+  isPresent   Boolean
+}
+
+model Skill {
+  id        String @id @default(cuid())
+  User      User   @relation(fields: [userId], references: [id])
+  userId    String
+  SkillName String
+}
+
+model Achievement {
   id          String   @id @default(cuid())
-  email       String   @unique
-  name        String
-  microsoftId String   @unique
-  createdAt   DateTime @default(now())
+  User        User     @relation(fields: [userId], references: [id])
+  userId      String
+  Title       String
+  Date        DateTime
+  Description String?
+}
+
+model Post {
+  id        String    @id @default(cuid())
+  User      User      @relation(fields: [userId], references: [id])
+  userId    String
+  Body      String
+  createdAt DateTime  @default(now())
+  media     String[]
+  Likes     Like[]
+  Comments  Comment[]
+}
+
+model Like {
+  id     String @id @default(cuid())
+  Post   Post   @relation(fields: [postId], references: [id])
+  postId String
+  User   User   @relation(fields: [userId], references: [id])
+  userId String
+}
+
+model Comment {
+  id              String        @id @default(cuid())
+  parentCommentId String?
+  body            String
+  createdAt       DateTime      @default(now())
+  Post            Post          @relation(fields: [postId], references: [id])
+  postId          String
+  User            User          @relation(fields: [userId], references: [id])
+  userId          String
+  likes           CommentLike[]
+}
+
+model CommentLike {
+  id        String  @id @default(cuid())
+  Comment   Comment @relation(fields: [commentId], references: [id])
+  commentId String
+  User      User    @relation(fields: [userId], references: [id])
+  userId    String
+}
+
+model Conversation {
+  id       String    @id @default(cuid())
+  user1_id String
+  user2_id String
+  user1    User      @relation("User1", fields: [user1_id], references: [id])
+  user2    User      @relation("User2", fields: [user2_id], references: [id])
+  Messages Message[]
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  sender_id      String
+  text           String
+  time           DateTime     @default(now())
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  conversationId String
+}
+
+model Connections {
+  id       String @id @default(cuid())
+  user1_id String
+  user2_id String
+  user1    User   @relation("User1", fields: [user1_id], references: [id])
+  user2    User   @relation("User2", fields: [user2_id], references: [id])
 }
