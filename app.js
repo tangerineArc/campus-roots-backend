@@ -6,7 +6,8 @@ import "dotenv/config";
 import express from "express";
 import passport from "passport";
 
-import authStrategy from "./auth-config/strategy.js";
+import jwtStrategy from "./auth-config/jwt-strategy.js";
+import oauthStrategy from "./auth-config/oauth-strategy.js";
 
 import authRouter from "./routes/auth-router.js";
 import indexRouter from "./routes/index-router.js";
@@ -34,7 +35,8 @@ app.use(express.json()); // parse json data
 app.use(express.urlencoded({ extended: true })); // parse formdata
 
 /* set up passport */
-passport.use(authStrategy);
+passport.use("azure_oauth", oauthStrategy);
+passport.use("jwt", jwtStrategy);
 
 /* routes */
 app.use("/", indexRouter);
