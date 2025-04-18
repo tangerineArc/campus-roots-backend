@@ -247,7 +247,7 @@ Before you begin working on anything, make sure you follow these steps in order 
     ```
 10. Sync the Prisma schema with your local database:
     ```bash
-    npm run "sync-prism->db"
+    npm run "sync-prisma->db"
     ```
     Note: you have to run this command whenever you make changes to the schema.
 7. To run the development server:
