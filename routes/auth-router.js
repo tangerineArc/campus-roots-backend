@@ -4,17 +4,25 @@ import { Router } from "express";
 import passport from "passport";
 
 import {
+  handleMicrosoftCallback,
   sendAuthStatus,
-  signInUser,
   signOutUser,
-  signUpUser,
 } from "../controllers/auth-controller.js";
 
 const authRouter = Router();
 
-authRouter.post("/sign-in", signInUser);
+authRouter.get("/microsoft", passport.authenticate("azure_oauth"));
+
+authRouter.get(
+  "/microsoft/callback",
+  passport.authenticate("azure_oauth", {
+    session: false,
+    failureRedirect: "/auth/failed",
+  }),
+  handleMicrosoftCallback
+);
+
 authRouter.post("/sign-out", signOutUser);
-authRouter.post("/sign-up", signUpUser);
 
 authRouter.get(
   "/status",
