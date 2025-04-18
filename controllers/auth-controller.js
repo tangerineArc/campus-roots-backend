@@ -15,6 +15,13 @@ const handleMicrosoftCallback = async (req, res) => {
 
 const sendAuthStatus = (req, res) => {
   const user = req.user;
+
+  if (!user) {
+    return res
+      .status(401)
+      .json({ success: false, message: "You are not authenticated" });
+  }
+
   res.status(200).json({ success: true, user });
 };
 
