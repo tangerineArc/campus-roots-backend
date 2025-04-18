@@ -8,7 +8,9 @@ datasource db {
 }
 
 model User {
-  id           String @id @default(cuid())
-  username     String @unique @db.VarChar(100)
-  passwordHash String
+  id          String   @id @default(cuid())
+  email       String   @unique
+  name        String
+  microsoftId String   @unique
+  createdAt   DateTime @default(now())
 }
