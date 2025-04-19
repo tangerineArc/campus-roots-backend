@@ -34,7 +34,6 @@ async function verifyCallback(
     }
 
     const userInfo = await res.json();
-
     if (!userInfo.mail.endsWith("@iitp.ac.in")) {
       return done(null, false, { message: "Not an IITP account" });
     }
