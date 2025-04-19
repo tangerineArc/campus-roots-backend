@@ -8,132 +8,170 @@ datasource db {
 }
 
 enum Role {
-  Alumni
-  Student
+  ALUMNUS
+  STUDENT
+}
+
+enum ConnectionStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
 }
 
 model User {
-  id             String         @id @default(cuid())
-  email          String         @unique
-  name           String?
-  microsoftId    String         @unique
-  createdAt      DateTime       @default(now())
-  role           Role?
-  About          String?
-  Avatar         String?
-  Experiences    Experience[]
-  Education      Education[]
-  Skills         Skill[]
-  Achievements   Achievement[]
-  posts          Post[]
-  LikedPosts     Like[]
-  Comments       Comment[]
-  LikedComments  CommentLike[]
-  conversations1 Conversation[] @relation("User1")
-  conversations2 Conversation[] @relation("User2")
-  Connection1    Connections[]  @relation("User1")
-  Connection2    Connections[]  @relation("User2")
+  id          String   @id @default(cuid())
+  email       String   @unique
+  name        String
+  createdAt   DateTime @default(now())
+  about       String?
+  avatar      String?
+  role        Role
+
+  experiences   Experience[]
+  education     Education[]
+  skills        Skill[]
+  achievements  Achievement[]
+  posts         Post[]
+  comments      Comment[]
+  likedPosts    PostLike[]
+  likedComments CommentLike[]
+
+  sentMessages     Message[] @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
+
+  connections1 Connection[] @relation("User1")
+  connections2 Connection[] @relation("User2")
 }
 
 model Experience {
-  id        String    @id @default(cuid())
-  User      User      @relation(fields: [userId], references: [id])
-  userId    String
-  company   String
-  Role      String
-  StartDate DateTime
-  EndDate   DateTime?
-  isPresent Boolean
+  id           String    @id @default(cuid())
+  organization String
+  title        String
+  startDate    DateTime
+  endDate      DateTime?
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
 }
 
 model Education {
-  id          String    @id @default(cuid())
-  User        User      @relation(fields: [userId], references: [id])
-  userId      String
-  Institution String
-  Degree      String
-  StartDate   DateTime
-  EndDate     DateTime?
-  isPresent   Boolean
+  id        String    @id @default(cuid())
+  school    String
+  degree    String
+  startDate DateTime
+  endDate   DateTime?
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
 }
 
 model Skill {
-  id        String @id @default(cuid())
-  User      User   @relation(fields: [userId], references: [id])
-  userId    String
-  SkillName String
+  id    String @id @default(cuid())
+  label String
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
 }
 
 model Achievement {
   id          String   @id @default(cuid())
-  User        User     @relation(fields: [userId], references: [id])
-  userId      String
-  Title       String
-  Date        DateTime
-  Description String?
+  title       String
+  date        DateTime
+  description String?
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
 }
 
 model Post {
-  id        String    @id @default(cuid())
-  User      User      @relation(fields: [userId], references: [id])
-  userId    String
-  Body      String
-  createdAt DateTime  @default(now())
-  media     String[]
-  Likes     Like[]
-  Comments  Comment[]
+  id        String   @id @default(cuid())
+  body      String
+  createdAt DateTime @default(now())
+
+  media    Media[]
+  likes    PostLike[]
+  comments Comment[]
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
 }
 
-model Like {
-  id     String @id @default(cuid())
-  Post   Post   @relation(fields: [postId], references: [id])
+model Media {
+  id          String    @id @default(cuid())
+  createdAt   DateTime  @default(now())
+  storagePath String
+  mimetype    String
+  mediaType   MediaType
+
+  post   Post   @relation(fields: [postId], references: [id])
   postId String
-  User   User   @relation(fields: [userId], references: [id])
+}
+
+model PostLike {
+  id String @id @default(cuid())
+
+  post   Post   @relation(fields: [postId], references: [id])
+  postId String
+
+  user   User   @relation(fields: [userId], references: [id])
   userId String
 }
 
 model Comment {
-  id              String        @id @default(cuid())
+  id        String   @id @default(cuid())
+  body      String
+  createdAt DateTime @default(now())
+
+  likes CommentLike[]
+
   parentCommentId String?
-  body            String
-  createdAt       DateTime      @default(now())
-  Post            Post          @relation(fields: [postId], references: [id])
-  postId          String
-  User            User          @relation(fields: [userId], references: [id])
-  userId          String
-  likes           CommentLike[]
+  parent          Comment?  @relation("ParentChildren", fields: [parentCommentId], references: [id])
+  children        Comment[] @relation("ParentChildren")
+
+  post   Post   @relation(fields: [postId], references: [id])
+  postId String
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
 }
 
 model CommentLike {
-  id        String  @id @default(cuid())
-  Comment   Comment @relation(fields: [commentId], references: [id])
-  commentId String
-  User      User    @relation(fields: [userId], references: [id])
-  userId    String
-}
+  id String @id @default(cuid())
 
-model Conversation {
-  id       String    @id @default(cuid())
-  user1_id String
-  user2_id String
-  user1    User      @relation("User1", fields: [user1_id], references: [id])
-  user2    User      @relation("User2", fields: [user2_id], references: [id])
-  Messages Message[]
+  comment   Comment @relation(fields: [commentId], references: [id])
+  commentId String
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
 }
 
 model Message {
-  id             String       @id @default(cuid())
-  sender_id      String
-  text           String
-  time           DateTime     @default(now())
-  conversation   Conversation @relation(fields: [conversationId], references: [id])
-  conversationId String
+  id   String   @id @default(cuid())
+  time DateTime @default(now())
+  text String
+
+  sender   User   @relation("SentMessages", fields: [senderId], references: [id])
+  senderId String
+
+  receiver   User   @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  receiverId String
 }
 
-model Connections {
-  id       String @id @default(cuid())
-  user1_id String
-  user2_id String
-  user1    User   @relation("User1", fields: [user1_id], references: [id])
-  user2    User   @relation("User2", fields: [user2_id], references: [id])
+model Connection {
+  id        String           @id @default(cuid())
+  status    ConnectionStatus @default(PENDING)
+  createdAt DateTime         @default(now())
+
+  user1   User   @relation("User1", fields: [user1Id], references: [id])
+  user1Id String
+
+  user2   User   @relation("User2", fields: [user2Id], references: [id])
+  user2Id String
+
+  @@unique([user1Id, user2Id])
 }
