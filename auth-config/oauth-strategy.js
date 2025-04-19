@@ -8,6 +8,8 @@ import { PrismaClient } from "@prisma/client";
 import jsonwebtoken from "jsonwebtoken";
 import { Strategy } from "passport-azure-ad-oauth2";
 
+import decideUserRole from "../utils/user-role-decider.js";
+
 const prisma = new PrismaClient();
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -43,12 +45,12 @@ async function verifyCallback(
       where: { email: userInfo.mail },
       update: {
         name: userInfo.displayName,
-        microsoftId: userInfo.id,
+        role: decideUserRole(userInfo.mail),
       },
       create: {
         email: userInfo.mail,
         name: userInfo.displayName,
-        microsoftId: userInfo.id,
+        role: decideUserRole(userInfo.mail),
       },
     });
 
