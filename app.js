@@ -48,9 +48,9 @@ app.options("*", cors());
 /* cookie parsing middleware */
 app.use(cookieParser());
 
-/* data parsing middleware */
-app.use(express.json()); // parse json data
-app.use(express.urlencoded({ extended: true })); // parse formdata
+/* body parsing middlewares */
+app.use(express.json()); // parse json-data
+app.use(express.urlencoded({ extended: true })); // parse form-data
 
 /* set up passport */
 passport.use("azure_oauth", oauthStrategy);
