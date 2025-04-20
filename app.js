@@ -1,21 +1,38 @@
 "use strict";
 
+import http from "node:http";
+
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import "dotenv/config";
 import express from "express";
 import passport from "passport";
+import { Server as SocketIOServer } from "socket.io";
+
+import configureChatSocket from "./services/chat-socket.js";
 
 import jwtStrategy from "./auth-config/jwt-strategy.js";
 import oauthStrategy from "./auth-config/oauth-strategy.js";
 
 import authRouter from "./routes/auth-router.js";
 import indexRouter from "./routes/index-router.js";
-import fetchMessages from "./routes/messages.js";
+import userRouter from "./routes/user-router.js";
 
 const app = express();
+const server = http.createServer(app);
 
 const PORT = process.env.PORT || 3000;
+
+/* set up socket io */
+const io = new SocketIOServer(server, {
+  cors: {
+    origin: JSON.parse(process.env.ALLOWED_ORIGINS),
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    credentials: true,
+  },
+});
+
+configureChatSocket(io);
 
 /* handle cross-origin requests */
 app.use(
@@ -42,7 +59,7 @@ passport.use("jwt", jwtStrategy);
 /* routes */
 app.use("/", indexRouter);
 app.use("/auth", authRouter);
-app.use("/users", fetchMessages);
+app.use("/user", userRouter);
 
 /* non-existent routes handler */
 app.all("*", (req, res) => {
@@ -56,6 +73,6 @@ app.use((err, req, res, next) => {
 });
 
 /* startup */
-app.listen(PORT, () => {
-  console.log(`Listening on port ${PORT} ...`);
+server.listen(PORT, () => {
+  console.log(`Server + Websocket listening on port ${PORT} ...`);
 });
