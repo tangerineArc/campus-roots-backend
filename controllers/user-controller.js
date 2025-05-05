@@ -64,16 +64,20 @@ const updateExperiences = expressAsyncHandler(async (req, res) => {
   await prisma.experience.deleteMany({ where: { userId } });
 
   await Promise.all(
-    experiences.map(({ organization, title, startDate, endDate }) =>
-      prisma.experience.create({
-        data: {
-          organization,
-          title,
-          startDate: new Date(startDate),
-          endDate: endDate ? new Date(endDate) : null,
-          userId,
-        },
-      })
+    experiences.map(
+      ({ organization, title, startMonth, startYear, endMonth, endYear }) =>
+        prisma.experience.create({
+          data: {
+            organization,
+            title,
+            startDate: new Date(startDate),
+            startMonth,
+            startYear,
+            endMonth,
+            endYear,
+            userId,
+          },
+        })
     )
   );
 
@@ -92,16 +96,19 @@ const updateEducation = expressAsyncHandler(async (req, res) => {
   await prisma.education.deleteMany({ where: { userId } });
 
   await Promise.all(
-    education.map(({ school, degree, startDate, endDate }) =>
-      prisma.education.create({
-        data: {
-          school,
-          degree,
-          startDate: new Date(startDate),
-          endDate: endDate ? new Date(endDate) : null,
-          userId,
-        },
-      })
+    education.map(
+      ({ school, degree, startMonth, startYear, endMonth, endYear }) =>
+        prisma.education.create({
+          data: {
+            school,
+            degree,
+            startMonth,
+            startYear,
+            endMonth,
+            endYear,
+            userId,
+          },
+        })
     )
   );
 
@@ -142,12 +149,13 @@ const updateAchievements = expressAsyncHandler(async (req, res) => {
   await prisma.achievement.deleteMany({ where: { userId: userId } });
 
   await Promise.all(
-    achievements.map(({ title, date, description }) =>
+    achievements.map(({ title, description, month, year }) =>
       prisma.achievement.create({
         data: {
           title,
           description,
-          date: new Date(date),
+          month,
+          year,
           userId,
         },
       })

@@ -59,19 +59,23 @@ model Experience {
   id           String    @id @default(cuid())
   organization String
   title        String
-  startDate    DateTime
-  endDate      DateTime?
+  startMonth   String
+  startYear    String
+  endMonth     DateTime?
+  endYear      DateTime?
 
   user   User   @relation(fields: [userId], references: [id])
   userId String
 }
 
 model Education {
-  id        String    @id @default(cuid())
-  school    String
-  degree    String
-  startDate DateTime
-  endDate   DateTime?
+  id         String  @id @default(cuid())
+  school     String
+  degree     String
+  startMonth String
+  startYear  String
+  endMonth   String?
+  endYear    String?
 
   user   User   @relation(fields: [userId], references: [id])
   userId String
@@ -86,9 +90,10 @@ model Skill {
 }
 
 model Achievement {
-  id          String   @id @default(cuid())
+  id          String  @id @default(cuid())
   title       String
-  date        DateTime
+  month       String
+  year        String
   description String?
 
   user   User   @relation(fields: [userId], references: [id])
