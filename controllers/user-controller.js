@@ -33,52 +33,45 @@ const getUserMessagesWithOtherUser = expressAsyncHandler(async (req, res) => {
 });
 
 const getProfileData = expressAsyncHandler(async (req, res) => {
-  const userId = req.params.id;
-
   const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: {
-      Experiences: true,
-      Education: true,
-      Skills: true,
-      Achievements: true,
+    where: { id: req.params.id },
+    include: {
+      experiences: true,
+      education: true,
+      skills: true,
+      achievements: true,
     },
   });
 
-  res.status(200).json({ success: true, data: user });
+  res.status(200).json({ success: true, user });
 });
 
 const updateProfileData = expressAsyncHandler(async (req, res) => {
-  const userId = req.user.id;
-  const { name, About, Avatar } = req.body;
+  const { name, about, avatar } = req.body;
 
   const updatedUser = await prisma.user.update({
-    where: { id: userId },
-    data: { name, About, Avatar },
+    where: { id: req.user.id },
+    data: { name, about, avatar },
   });
 
-  res.status(200).json({
-    success: true,
-    data: updatedUser,
-  });
+  res.status(200).json({ success: true, user: updatedUser });
 });
 
-const updateExperience = expressAsyncHandler(async (req, res) => {
-  const userId = req.user.id;
-  const { Experiences } = req.body;
+const updateExperiences = expressAsyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+  const { experiences } = req.body;
 
-  await prisma.experience.deleteMany({ where: { userId: userId } });
+  await prisma.experience.deleteMany({ where: { userId } });
 
   await Promise.all(
-    Experiences.map((exp) =>
+    experiences.map(({ organization, title, startDate, endDate }) =>
       prisma.experience.create({
         data: {
-          company: exp.company,
-          Role: exp.Role,
-          StartDate: new Date(exp.StartDate),
-          EndDate: exp.EndDate ? new Date(exp.EndDate) : null,
-          isPresent: exp.isPresent,
-          userId: userId,
+          organization,
+          title,
+          startDate: new Date(startDate),
+          endDate: endDate ? new Date(endDate) : null,
+          userId,
         },
       })
     )
@@ -86,58 +79,27 @@ const updateExperience = expressAsyncHandler(async (req, res) => {
 
   const updatedUser = await prisma.user.findUnique({
     where: { id: userId },
-    select: { Experiences: true },
+    include: { experiences: true },
   });
 
-  res.status(200).json({ success: true, data: updatedUser });
-});
-
-const deleteExperience = expressAsyncHandler(async (req, res) => {
-  const userId = req.user.id;
-  const { Experiences } = req.body;
-  await prisma.experience.deleteMany({
-    where: { userId: userId },
-  });
-
-  await Promise.all(
-    Experiences.map((exp) =>
-      prisma.experience.create({
-        data: {
-          company: exp.company,
-          Role: exp.Role,
-          StartDate: new Date(exp.StartDate),
-          EndDate: exp.EndDate ? new Date(exp.EndDate) : null,
-          isPresent: exp.isPresent,
-          userId: userId,
-        },
-      })
-    )
-  );
-
-  const updatedUser = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { Experiences: true },
-  });
-
-  res.status(200).json({ success: true, data: updatedUser });
+  res.status(200).json({ success: true, user: updatedUser });
 });
 
 const updateEducation = expressAsyncHandler(async (req, res) => {
-  const userId = req.user.id;
-  const { Education } = req.body;
+  const { id: userId } = req.user;
+  const { education } = req.body;
 
-  await prisma.education.deleteMany({ where: { userId: userId } });
+  await prisma.education.deleteMany({ where: { userId } });
 
-  const updatedEducation = await Promise.all(
-    Education.map((edu) =>
+  await Promise.all(
+    education.map(({ school, degree, startDate, endDate }) =>
       prisma.education.create({
         data: {
-          Institution: edu.Institution,
-          Degree: edu.Degree,
-          StartDate: new Date(edu.StartDate),
-          EndDate: edu.EndDate ? new Date(edu.EndDate) : null,
-          isPresent: edu.isPresent,
-          userId: userId,
+          school,
+          degree,
+          startDate: new Date(startDate),
+          endDate: endDate ? new Date(endDate) : null,
+          userId,
         },
       })
     )
@@ -145,131 +107,48 @@ const updateEducation = expressAsyncHandler(async (req, res) => {
 
   const updatedUser = await prisma.user.findUnique({
     where: { id: userId },
-    select: { Education: true },
+    include: { education: true },
   });
 
-  res.status(200).json({ success: true, data: updatedUser });
+  res.status(200).json({ success: true, user: updatedUser });
 });
 
-const deleteEducation = expressAsyncHandler(async (req, res) => {
-  const userId = req.user.id;
-  const { Education } = req.body;
+const updateSkills = expressAsyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+  const { skills } = req.body;
 
-  await prisma.education.deleteMany({ where: { userId: userId } });
-
-  await Promise.all(
-    Education.map((edu) =>
-      prisma.education.create({
-        data: {
-          Institution: edu.Institution,
-          Degree: edu.Degree,
-          StartDate: new Date(edu.StartDate),
-          EndDate: edu.EndDate ? new Date(edu.EndDate) : null,
-          isPresent: edu.isPresent,
-          userId: userId,
-        },
-      })
-    )
-  );
-
-  const updatedUser = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { Education: true },
-  });
-
-  res.status(200).json({
-    success: true,
-    data: updatedUser,
-  });
-});
-
-const updateSkill = expressAsyncHandler(async (req, res) => {
-  const userId = req.user.id;
-  const { Skills } = req.body;
-
-  await prisma.skill.deleteMany({ where: { userId: userId } });
+  await prisma.skill.deleteMany({ where: { userId } });
 
   await Promise.all(
-    Skills.map((skill) =>
+    skills.map(({ label }) =>
       prisma.skill.create({
-        data: { SkillName: skill.SkillName, userId },
+        data: { label, userId },
       })
     )
   );
 
   const updatedUser = await prisma.user.findUnique({
     where: { id: userId },
-    select: { Skills: true },
+    include: { skills: true },
   });
 
-  res.status(200).json({ success: true, data: updatedUser });
-});
-
-const deleteSkill = expressAsyncHandler(async (req, res) => {
-  const userId = req.user.id;
-  const { Skills } = req.body;
-
-  await prisma.skill.deleteMany({ where: { userId: userId } });
-
-  await Promise.all(
-    Skills.map((skill) =>
-      prisma.skill.create({
-        data: { SkillName: skill.SkillName, userId },
-      })
-    )
-  );
-
-  const updatedUser = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { Skills: true },
-  });
-
-  res.status(200).json({ success: true, data: updatedUser });
+  res.status(200).json({ success: true, user: updatedUser });
 });
 
 const updateAchievements = expressAsyncHandler(async (req, res) => {
-  const userId = req.user.id;
-  const { Achievements } = req.body;
-
-  await prisma.achievement.deleteMany({
-    where: { userId: userId },
-  });
-
-  await Promise.all(
-    Achievements.map((achievement) =>
-      prisma.achievement.create({
-        data: {
-          Title: achievement.Title,
-          Description: achievement.Description,
-          Date: new Date(achievement.Date),
-          userId: userId,
-        },
-      })
-    )
-  );
-
-  const updatedUser = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { Achievements: true },
-  });
-
-  res.status(200).json({ success: true, data: updatedUser });
-});
-
-const deleteAchievements = expressAsyncHandler(async (req, res) => {
-  const userId = req.user.id;
-  const { Achievements } = req.body;
+  const { id: userId } = req.user;
+  const { achievements } = req.body;
 
   await prisma.achievement.deleteMany({ where: { userId: userId } });
 
   await Promise.all(
-    Achievements.map((achievement) =>
+    achievements.map(({ title, date, description }) =>
       prisma.achievement.create({
         data: {
-          Title: achievement.Title,
-          Description: achievement.Description,
-          Date: new Date(achievement.Date),
-          userId: userId,
+          title,
+          description,
+          date: new Date(date),
+          userId,
         },
       })
     )
@@ -277,23 +156,19 @@ const deleteAchievements = expressAsyncHandler(async (req, res) => {
 
   const updatedUser = await prisma.user.findUnique({
     where: { id: userId },
-    select: { Achievements: true },
+    include: { achievements: true },
   });
 
-  res.status(200).json({ success: true, data: updatedUser });
+  res.status(200).json({ success: true, user: updatedUser });
 });
 
 export {
-  deleteAchievements,
-  deleteEducation,
-  deleteExperience,
-  deleteSkill,
   getProfileData,
   getUserConversations,
   getUserMessagesWithOtherUser,
   updateAchievements,
   updateEducation,
-  updateExperience,
+  updateExperiences,
   updateProfileData,
-  updateSkill,
+  updateSkills,
 };
