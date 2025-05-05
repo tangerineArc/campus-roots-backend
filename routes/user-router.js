@@ -4,18 +4,14 @@ import { Router } from "express";
 import passport from "passport";
 
 import {
-  deleteAchievements,
-  deleteEducation,
-  deleteExperience,
-  deleteSkill,
   getProfileData,
   getUserConversations,
   getUserMessagesWithOtherUser,
   updateAchievements,
   updateEducation,
-  updateExperience,
+  updateExperiences,
   updateProfileData,
-  updateSkill,
+  updateSkills,
 } from "../controllers/user-controller.js";
 
 const userRouter = Router();
@@ -45,51 +41,27 @@ userRouter.put(
 );
 
 userRouter.put(
-  "/experience/update",
+  "/experiences",
   passport.authenticate("jwt", { session: false }),
-  updateExperience
+  updateExperiences
 );
 
 userRouter.put(
-  "/experience/delete",
-  passport.authenticate("jwt", { session: false }),
-  deleteExperience
-);
-
-userRouter.put(
-  "/education/delete",
-  passport.authenticate("jwt", { session: false }),
-  deleteEducation
-);
-
-userRouter.put(
-  "/education/update",
+  "/education",
   passport.authenticate("jwt", { session: false }),
   updateEducation
 );
 
 userRouter.put(
-  "/skill/update",
+  "/skills",
   passport.authenticate("jwt", { session: false }),
-  updateSkill
+  updateSkills
 );
 
 userRouter.put(
-  "/skill/delete",
-  passport.authenticate("jwt", { session: false }),
-  deleteSkill
-);
-
-userRouter.put(
-  "/achievements/update",
+  "/achievements",
   passport.authenticate("jwt", { session: false }),
   updateAchievements
-);
-
-userRouter.put(
-  "/achievements/delete",
-  passport.authenticate("jwt", { session: false }),
-  deleteAchievements
 );
 
 export default userRouter;
