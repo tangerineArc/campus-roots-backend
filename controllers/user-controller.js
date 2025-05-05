@@ -70,7 +70,6 @@ const updateExperiences = expressAsyncHandler(async (req, res) => {
           data: {
             organization,
             title,
-            startDate: new Date(startDate),
             startMonth,
             startYear,
             endMonth,
