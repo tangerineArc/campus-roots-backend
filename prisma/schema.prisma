@@ -56,13 +56,13 @@ model User {
 }
 
 model Experience {
-  id           String    @id @default(cuid())
+  id           String  @id @default(cuid())
   organization String
   title        String
   startMonth   String
   startYear    String
-  endMonth     DateTime?
-  endYear      DateTime?
+  endMonth     String?
+  endYear      String?
 
   user   User   @relation(fields: [userId], references: [id])
   userId String
