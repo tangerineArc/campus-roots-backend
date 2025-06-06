@@ -53,7 +53,6 @@ const updateProfileData = expressAsyncHandler(async (req, res) => {
     where: { id: req.user.id },
     data: { name, about, avatar },
   });
-
   res.status(200).json({ success: true, user: updatedUser });
 });
 
@@ -177,5 +176,6 @@ export {
   updateEducation,
   updateExperiences,
   updateProfileData,
-  updateSkills,
+  updateSkills
 };
+

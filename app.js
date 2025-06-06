@@ -17,6 +17,7 @@ import oauthStrategy from "./auth-config/oauth-strategy.js";
 import authRouter from "./routes/auth-router.js";
 import indexRouter from "./routes/index-router.js";
 import userRouter from "./routes/user-router.js";
+import postsRouter from "./routes/posts-router.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -60,6 +61,7 @@ passport.use("jwt", jwtStrategy);
 app.use("/", indexRouter);
 app.use("/auth", authRouter);
 app.use("/user", userRouter);
+app.use("/posts", postsRouter);
 
 /* non-existent routes handler */
 app.all("*", (req, res) => {
