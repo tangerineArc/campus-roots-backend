@@ -132,6 +132,8 @@ model PostLike {
 
   user   User   @relation(fields: [userId], references: [id])
   userId String
+
+  @@unique([userId, postId])
 }
 
 model Comment {
@@ -160,6 +162,8 @@ model CommentLike {
 
   user   User   @relation(fields: [userId], references: [id])
   userId String
+
+  @@unique([userId, commentId])
 }
 
 model Message {
