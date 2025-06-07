@@ -2,7 +2,7 @@
 
 import { Router } from "express";
 import passport from "passport";
-import { addComment, addPost, getCommentsData, getLikesCount, getPostsData, toggleCommentLikes, togglePostLikes } from "../controllers/posts-controller.js";
+import { addComment, addPost, deleteComment, deletePost, getCommentsData, getLikesCount, getPosts, getPostsData, toggleCommentLikes, togglePostLikes } from "../controllers/posts-controller.js";
 
 const postsRouter = Router();
 
@@ -47,5 +47,23 @@ postsRouter.put(
   passport.authenticate("jwt", { session: false }),
   addComment
 )
+
+postsRouter.get(
+  "/:id",
+  passport.authenticate("jwt", { session: false }),
+  getPosts
+);
+
+postsRouter.put(
+  "/delete/:id",
+  passport.authenticate("jwt", { session: false }),
+  deletePost
+);
+
+postsRouter.put(
+  "/comment/delete/:id",
+  passport.authenticate("jwt", { session: false }),
+  deleteComment
+);
 
 export default postsRouter;
