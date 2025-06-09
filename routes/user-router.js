@@ -5,6 +5,7 @@ import passport from "passport";
 
 import {
   getProfileData,
+  getProfileDataByName,
   getUserConversations,
   getUserMessagesWithOtherUser,
   updateAchievements,
@@ -33,6 +34,12 @@ userRouter.get(
   passport.authenticate("jwt", { session: false }),
   getProfileData
 );
+
+userRouter.get(
+  "/name/:name",
+  passport.authenticate("jwt", { session: false }),
+  getProfileDataByName
+)
 
 userRouter.put(
   "/profile",

@@ -46,6 +46,26 @@ const getProfileData = expressAsyncHandler(async (req, res) => {
   res.status(200).json({ success: true, user });
 });
 
+const getProfileDataByName = expressAsyncHandler(async (req, res) => {
+  const user = await prisma.user.findMany({
+    where: {
+      name: {
+        contains: req.params.name,
+        mode: "insensitive",
+      },
+    },
+    include: {
+      experiences: true,
+      education: true,
+      skills: true,
+      achievements: true,
+    },
+  });
+
+  res.status(200).json({ success: true, user });
+});
+
+
 const updateProfileData = expressAsyncHandler(async (req, res) => {
   const { name, about, avatar } = req.body;
 
@@ -170,6 +190,7 @@ const updateAchievements = expressAsyncHandler(async (req, res) => {
 
 export {
   getProfileData,
+  getProfileDataByName,
   getUserConversations,
   getUserMessagesWithOtherUser,
   updateAchievements,
