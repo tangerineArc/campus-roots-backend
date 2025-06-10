@@ -188,11 +188,105 @@ const updateAchievements = expressAsyncHandler(async (req, res) => {
   res.status(200).json({ success: true, user: updatedUser });
 });
 
+const getConnections = expressAsyncHandler(async (req, res) => {
+  const userId = req.params.id;
+  const users = await prisma.connection.findMany({
+    where: {
+      OR: [
+        {
+          AND: [
+            { OR: [{ user1Id: userId }, { user2Id: userId }] },
+            { status: 'ACCEPTED' }
+          ]
+        },
+        {
+          AND: [
+            { user2Id: userId },
+            { status: 'PENDING' }
+          ]
+        }
+      ]
+    },
+    include: {
+      user1: true,
+      user2: true,
+    },
+  });
+
+  const connections = users.map(connection => {
+    const connectedUser = connection.user1Id === userId ? connection.user2 : connection.user1;
+    return {
+      user: connectedUser,
+      status: connection.status
+    };
+  });
+
+  res.status(200).json({ success: true, connections });
+});
+
+const addConnection = expressAsyncHandler(async (req, res) => {
+  const user1Id = req.params.id1;
+  const user2Id = req.params.id2;
+
+  const connection = await prisma.connection.create({
+    data: {
+      user1Id,
+      user2Id,
+      status: 'PENDING'
+    },
+    include: {
+      user1: true,
+      user2: true
+    }
+  });
+
+  res.status(200).json({ success: true });
+});
+
+const removeConnection = expressAsyncHandler(async (req, res) => {
+  const user1Id = req.params.id1;
+  const user2Id = req.params.id2;
+
+  await prisma.connection.deleteMany({
+    where: {
+      OR: [
+        { AND: [{ user1Id }, { user2Id }] },
+        { AND: [{ user1Id: user2Id }, { user2Id: user1Id }] }
+      ]
+    }
+  });
+
+  res.status(200).json({ success: true });
+});
+
+const acceptConnection = expressAsyncHandler(async (req, res) => {
+  const user1Id = req.params.id1;
+  const user2Id = req.params.id2;
+
+  const connection = await prisma.connection.updateMany({
+    where: {
+      OR: [
+        { AND: [{ user1Id }, { user2Id }, { status: 'PENDING' }] },
+        { AND: [{ user1Id: user2Id }, { user2Id: user1Id }, { status: 'PENDING' }] }
+      ]
+    },
+    data: {
+      status: 'ACCEPTED'
+    }
+  });
+
+  res.status(200).json({ success: true });
+});
+
 export {
+  acceptConnection,
+  addConnection,
+  getConnections,
   getProfileData,
   getProfileDataByName,
   getUserConversations,
   getUserMessagesWithOtherUser,
+  removeConnection,
   updateAchievements,
   updateEducation,
   updateExperiences,
