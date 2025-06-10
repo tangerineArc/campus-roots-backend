@@ -1,3 +1,4 @@
 .env
 auth-config/keys
 node_modules
+.vercel
