@@ -5,7 +5,7 @@
       "src": "app.js",
       "use": "@vercel/node",
       "config": {
-        "buildCommand": "npm install && npm run generate-keys && npx prisma generate --sql"
+        "buildCommand": "npm install && npm run generate-keys && npx prisma generate"
       }
     }
   ],
