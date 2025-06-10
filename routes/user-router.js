@@ -4,10 +4,14 @@ import { Router } from "express";
 import passport from "passport";
 
 import {
+  acceptConnection,
+  addConnection,
+  getConnections,
   getProfileData,
   getProfileDataByName,
   getUserConversations,
   getUserMessagesWithOtherUser,
+  removeConnection,
   updateAchievements,
   updateEducation,
   updateExperiences,
@@ -70,5 +74,30 @@ userRouter.put(
   passport.authenticate("jwt", { session: false }),
   updateAchievements
 );
+
+userRouter.get(
+  "/connections/:id",
+  passport.authenticate("jwt", { session: false }),
+  getConnections
+);
+
+userRouter.put(
+  "/connections/add/:id1/:id2",
+  passport.authenticate("jwt", { session: false }),
+  addConnection,
+);
+
+userRouter.put(
+  "/connections/remove/:id1/:id2",
+  passport.authenticate("jwt", { session: false }),
+  removeConnection,
+);
+
+userRouter.put(
+  "/connections/accept/:id1/:id2",
+  passport.authenticate("jwt", { session: false }),
+  acceptConnection,
+);
+
 
 export default userRouter;
