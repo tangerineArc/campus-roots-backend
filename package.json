@@ -16,7 +16,8 @@
     "prisma-studio": "prisma studio",
     "start": "node app.js",
     "sync-db->prisma": "prisma db pull",
-    "sync-prisma->db": "prisma db push"
+    "sync-prisma->db": "prisma db push",
+    "build": "prisma generate"
   },
   "keywords": [],
   "author": "Swagatam Pati <swagatamheroz@gmail.com>",
