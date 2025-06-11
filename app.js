@@ -15,7 +15,6 @@ import jwtStrategy from "./auth-config/jwt-strategy.js";
 import oauthStrategy from "./auth-config/oauth-strategy.js";
 
 import authRouter from "./routes/auth-router.js";
-import indexRouter from "./routes/index-router.js";
 import userRouter from "./routes/user-router.js";
 import postsRouter from "./routes/posts-router.js";
 
