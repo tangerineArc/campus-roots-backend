@@ -1,7 +1,6 @@
 "use strict";
 
 import { PrismaClient } from "@prisma/client";
-import { getAllConversationsForUser } from "@prisma/client/sql";
 import expressAsyncHandler from "express-async-handler";
 
 import { readFileSync } from "node:fs";
