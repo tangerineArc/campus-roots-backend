@@ -4,12 +4,17 @@ import { PrismaClient } from "@prisma/client";
 import { getAllConversationsForUser } from "@prisma/client/sql";
 import expressAsyncHandler from "express-async-handler";
 
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+
 const prisma = new PrismaClient();
 
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const sql = readFileSync(join(__dirname, "..", "prisma", "sql", "getAllConversationsForUser.sql"), "utf-8");
+
 const getUserConversations = expressAsyncHandler(async (req, res) => {
-  const conversations = await prisma.$queryRawTyped(
-    getAllConversationsForUser(req.user.id)
-  );
+  const conversations = await prisma.$queryRawUnsafe(sql, req.user.id);
 
   res.status(200).json({ success: true, conversations });
 });
