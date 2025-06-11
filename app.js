@@ -58,7 +58,6 @@ passport.use("azure_oauth", oauthStrategy);
 passport.use("jwt", jwtStrategy);
 
 /* routes */
-app.use("/", indexRouter);
 app.use("/auth", authRouter);
 app.use("/user", userRouter);
 app.use("/posts", postsRouter);
