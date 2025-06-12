@@ -10,7 +10,7 @@ const handleMicrosoftCallback = async (req, res) => {
       sameSite: "lax",
       maxAge: 24 * 60 * 60 * 1000, // 1 day
     })
-    .redirect(req.headers.referer || process.env.FRONTEND_REDIRECTION_URL);
+    .redirect(process.env.FRONTEND_REDIRECTION_URL);
 };
 
 const sendAuthStatus = (req, res) => {
