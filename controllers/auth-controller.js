@@ -9,6 +9,7 @@ const handleMicrosoftCallback = async (req, res) => {
       secure: true,
       sameSite: "none",
       maxAge: 24 * 60 * 60 * 1000, // 1 day
+      domain: ".onrender.com",
     })
     .redirect(process.env.FRONTEND_REDIRECTION_URL);
 };
