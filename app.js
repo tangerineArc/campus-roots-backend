@@ -26,7 +26,7 @@ const PORT = process.env.PORT || 3000;
 /* set up socket io */
 const io = new SocketIOServer(server, {
   cors: {
-    origin: JSON.parse(process.env.ALLOWED_ORIGINS),
+    origin: process.env.ALLOWED_ORIGINS || "http://localhost:3000",
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
   },
@@ -37,7 +37,7 @@ configureChatSocket(io);
 /* handle cross-origin requests */
 app.use(
   cors({
-    origin: JSON.parse(process.env.ALLOWED_ORIGINS),
+    origin: process.env.ALLOWED_ORIGINS || "http://localhost:3000",
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
   })
